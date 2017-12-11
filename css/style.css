@@ -1,0 +1,818 @@
+/*********************************************************
+ *    1. GENERAL: Color variables & general tag selectors
+ *    2. NAVBAR: not much needed here because the navbar is 99% based on Bootstrap classes - see note below
+ *    3. COLOR PALETTE
+ *    4. GAME BOARD - COLOR SLOTS
+ *    5. GAME BOARD - BLACK/WHITE PEGS & CHECK MARK
+ *    6. INSTRUCTIONS
+ *    7. ABOUT US
+ *    8. MEDIA
+ *
+ *    Notes on classes:
+ *    'currentTry': remove & assign this class to 'guess' divs to mark active row
+ *         (currently assumes game starts at bottom of screen - could switch to top)
+ *    'currentPick': remove & assign this class to 'picker' divs to mark active color
+ *    'hoverColor_1' thru 'hoverColor_6': assign to current guessing row so that the active color shows up on hover
+ *    'bgColor_1' thru 'bgColor_6': use to set background color when user clicks on a slot
+ *
+ *
+ **********************************************************/
+
+
+
+/*********************************************************
+ *  1. GENERAL
+ ********************************************************/
+
+/*Use color variables for paint palette*/
+:root {
+  --color1: #d31b1b;
+  --color2: #fa7808;
+  --color3: #ffff3a;
+  --color4: #27be27;
+  --color5: #3333b2;
+  --color6: #be32be;
+}
+
+body,h1,h2,h3,h4,h5,h6,p, input {
+  font-family: "Poppins", sans-serif;
+  color: white;
+}
+h1 {
+  font-size: 2em;
+  margin-top: 5vh;
+}
+h2 {
+  font-size: 1.7em;
+}
+/*TBD add class name login to ol & form els in login screen*/
+.login {
+  margin: 15px auto 40px auto;
+  text-align: center;
+}
+ol.login {
+  max-width: 600px;
+}
+form.login {
+  max-width: 300px;
+}
+.login li {
+  color:black;
+  text-align: left;
+}
+.login input[type="submit"] {
+  color: #575656;
+}
+.login input[type="submit"]:hover {
+  color: black;
+  background-color:azure;
+  cursor: pointer;
+}
+.login a:hover {
+  color:#28c2fa;
+}
+body, html {
+    height: 100%;
+    line-height: 1.8;
+    box-sizing:border-box;
+}
+body {
+    background-color: #2f3444;
+    overflow: auto;
+    overflow-x: hidden;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.background {
+    background-color: #2f3444;
+    left: 0; 
+    min-height: 100%; 
+    min-width: 100%; 
+    position: absolute;
+    top: 0; 
+    bottom: 0;
+}
+
+
+/*********************************************************
+ *  2. NAVBAR
+ *********************************************************
+ * Note that the navbar section of html file is from bootstrap
+ * template at https://v4-alpha.getbootstrap.com/components/navbar/
+ * All classes in nav section are bootstrap classes.
+ *
+ * 'navbar-collapse' is a bootstrap class, but adding this moves
+ * menu items to right side of bar (also flips order).
+ * It's equiv to right float. (rtl = Right To Left)
+ ********************************************************/
+.navbar-collapse  {
+  direction: rtl;
+}
+.navbar .navbar-nav .myMenu {
+display: inline;
+color: rgba(0,0,0,.9);
+}
+.navbar p {
+  padding: 8px;
+  margin-bottom: 0;
+  color: rgba(0,0,0,.5);
+}
+.navbar .myMenu:hover {
+  color: black;
+  font-weight: 800;
+}
+
+
+/*********************************************************
+ *  3. COLOR PALETTE
+ ********************************************************/
+/* text shadow for most of the font awesome icons */
+.palette .picker, .checkMark, .nextGame {
+  text-shadow: 2px 2px 2px #262626;
+}
+.palette, .board {
+  box-sizing: border-box;
+  display:inline-block;
+}
+.palette .picker {
+  border-radius: 50%;
+  height: 4em;
+  margin: 12px 0 12px auto;
+  text-align:center;
+  width: 12vh;
+}
+.palette .dupl {
+  font-size: 80%;
+  height: 4em;
+  margin: 20px 0 12px auto;
+  width: 12vh;
+  line-height: 1;
+  text-align: center;
+}
+.palette .picker:hover {
+/*  opacity: .7;*/
+}
+
+/*Using colors 0 - 5 to fit well with arrays for java*/
+.picker:nth-child(1) {
+  color: var(--color1);
+}
+.picker:nth-child(2) {
+  color: var(--color2);
+}
+.picker:nth-child(3) {
+  color: var(--color3);
+}
+.picker:nth-child(4) {
+  color: var(--color4);
+}
+.picker:nth-child(5) {
+  color: var(--color5);
+}
+.picker:nth-child(6) {
+  color: var(--color6);
+}
+.currentPick {
+  font-size: 140%;
+}
+
+
+/*For custom cursor*/
+.palette .picker, .currentTry .slot {
+  cursor: url("../images/paintbrush.svg"), auto;
+}
+
+.dupl {
+  margin: 0 10px;
+}
+.dupl input {
+  margin: 0 10px;
+}
+
+
+/*********************************************************
+ *  4. GAME BOARD - COLOR SLOTS
+ ********************************************************/
+.board {
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+.board .guess:first-child .slot {
+  vertical-align:middle;
+/*  border-radius:50%;*/
+  height: 15px;
+  border: none;
+/*  border-width: 2px;*/
+}
+.slot, .board .pegs, .board .checkMark, .board .nextGame {
+  display: inline-block;
+  vertical-align: middle;
+}
+.slot, .board .pegs, .board .nextGame {
+  max-height: 150px;
+  max-width: 150px;
+}
+.board .checkMark, .board .pegs, .board .nextGame {
+  margin: auto 1vw;
+}
+
+/* 'guess' class represents each of the 8 rows on game board */
+.board .guess {
+  margin: 8px auto;
+  text-align: left;
+}
+.slot {
+  border: 1px solid white;
+  margin: auto;
+}
+.hoverColor_1 .slot:hover {
+  background-color: var(--color1);
+}
+.hoverColor_2 .slot:hover {
+  background-color: var(--color2);
+}
+.hoverColor_3 .slot:hover {
+  background-color: var(--color3);
+}
+.hoverColor_4 .slot:hover {
+  background-color: var(--color4);
+}
+.hoverColor_5 .slot:hover {
+  background-color: var(--color5);
+}
+.hoverColor_6 .slot:hover {
+  background-color: var(--color6);
+}
+.bgColor_1.slot {
+  background-color: var(--color1);
+}
+.bgColor_2.slot {
+  background-color: var(--color2);
+}
+.bgColor_3.slot {
+  background-color: var(--color3);
+}
+.bgColor_4.slot {
+  background-color: var(--color4);
+}
+.bgColor_5.slot {
+  background-color: var(--color5);
+}
+.bgColor_6.slot {
+  background-color: var(--color6);
+}
+.board .playHere {
+  color:transparent;   /* Make hand pointer icon transparent except for current try */
+  display: inline-block;
+  padding-right: 1vw;
+  vertical-align:middle;
+}
+
+
+/*********************************************************
+ *  5. GAME BOARD - BLACK/WHITE PEGS & CHECK MARK
+ *********************************************************
+ * Note the pegs, hand pointer & check mark will show
+ * or hide depending on which guess is 'currentTry'
+ ********************************************************/
+.checkMark, .gameOver {
+  color: limegreen;
+}
+.checkMark:hover, .gameOver:hover {
+  color: lime;
+}
+.pegs > div {
+  width: 100%;
+  height: 100%;
+}
+
+/*Styling for each tiny peg*/
+.pegSample, .pegSample div {
+  display: block;
+}
+.pegSample .pegSlot {
+    width: 20px;
+}
+.pegSample .pegSlot, .pegSample p {
+    height: 20px;
+    display: inline-block;
+}
+.pegSample .pegDescription {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+.pegSample p {
+/*
+  vertical-align: middle;
+  font-size: 12px;
+*/
+}
+.halfHeight {
+  height: 50%;
+}
+.pegSlot {
+  padding: 2px;
+  width: calc(50% - 2.5px);
+  height:calc(100% - 2.5px);
+  display:inline-block;
+}
+.peg {
+  vertical-align:middle;
+  background-color: #888787;
+  border-color: red;
+  border-style: solid;
+  border-radius:50%;
+  height:100%;
+  width: 100%;
+}
+
+.peg.blackPeg {
+  background-color: black;
+  border-color: limegreen;
+}
+.peg.whitePeg {
+  background-color: white;
+  border-color: orange;
+}
+
+/* Hide pegs & check marks for each guess row until user plays that row */
+.guess .pegs, .guess .checkMark {
+  visibility: hidden;
+}
+
+
+/* For current guess and final solution: */
+.board .currentTry .playHere {
+  color:white;   /* changes from transparent to white so it shows up */
+}
+/*.board .currentTry .pegs, .board .guess:first-child, .board .guess:nth-child(2) {*/
+.board .currentTry .pegs, .board .guess:first-child {
+  display: none;  /* hide pegs & hide solution */
+}
+/*.board .currentTry .checkMark, .board .guess:first-child.showSolution, .board .guess:nth-child(2).showSolution {*/
+.board .currentTry .checkMark, .board .guess:first-child.showSolution {
+  display: inline-block;  /* show check mark & show solution*/
+}
+.board .currentTry .slot {
+  border: 3px solid white;  /* wider border for current guessing row */
+}
+.guess.currentTry .checkMark {
+  visibility:visible;
+}
+.board .showSolution p {
+  text-align:center;
+  line-height:1.4;
+  margin-bottom: 0;
+}
+.showSolution {
+  display: inline-block;
+}
+.showSolution .playHere i {
+  padding-right: 2vh;
+}
+
+/* For completed guesses: */
+.currentTry ~ .guess .pegs, .gameOver ~ .guess .pegs, .gameOver .pegs {
+  display: inline-block;   /* show pegs */
+}
+.currentTry ~ .guess .checkMark, .gameOver ~ .guess .checkMark, .gameOver .checkMark {
+  display: none;  /* hide check mark */
+}
+.guess.currentTry ~ .guess .pegs, .guess.gameOver ~ .guess .pegs, .guess.gameOver .pegs {
+  visibility:visible;
+}
+
+/* for game over - hide 'next game' icon except at end of game: */
+.guess .nextGame {
+  display: none;
+}
+.guess.gameOver .nextGame {
+  display: inline-block;
+}
+
+/*********************************************
+ * 6. INSTRUCTIONS SECTION
+ * Note: 'instructions' class relates to the div that contains all instructions
+ * 'openIt' class relates to the question mark that should display when user closes directions
+ *********************************************/
+
+/* note that the width for the instructions & openIt divs are set as % in the media section
+ because they vary depending on screen size */
+.instructions, .openIt {
+/*  color: white;*/
+  display: none;
+  height: 500px; /* check that this works for all screen sizes */
+  margin: 5vh 1% 0 0;
+  padding: 15px;
+  position: relative;
+  font-size: 12px;
+}
+.instructions .close, .openIt .help {
+  opacity: .5;
+  padding:0 3px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.instructions .close:hover, .openIt .help:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.instructions.showThis, .openIt.showThis {
+  display: block;
+}
+.instructions h3 {
+  color: white;
+}
+.instructions ul {
+  color: white;
+}
+
+
+
+/*********************************************************
+ *  7. ABOUT US
+ ********************************************************/
+
+
+.aboutUs {
+  margin: auto;
+  color: white;
+}
+.aboutUs .aboutSlots {
+  padding: .1em;
+  height: 100%;
+}
+.socMedia {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  line-height: 1.2;
+}
+.dev a {
+  color: white;
+  opacity: .7;
+  text-decoration: none;
+}
+.aboutHand, .aboutCheck {
+  margin: auto;
+  height: 150px;
+  padding: 20px;
+}
+.dev a:hover {
+  opacity: 1;
+}
+.aboutUs .dev {
+  border: 4px solid white;
+  max-width: 185px;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+.aboutUs div:nth-child(2) .dev {
+  background-color: var(--color4);
+}
+.aboutUs div:nth-child(3) .dev {
+  background-color: var(--color1);
+}
+.aboutUs div:nth-child(4) .dev {
+  background-color: var(--color5);
+}
+.aboutUs div:nth-child(5) .dev {
+  background-color: var(--color6);
+}
+
+.about {
+  margin: 15% auto;
+  text-align: center;
+}
+.about .returnToGame:hover a {
+  color: #28c2fa;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+
+/*********************************************************
+ *  8. ANIMATION FOR COLOR PICKER
+ ********************************************************/
+
+.picker:hover {
+    animation-name: wiggle;
+    animation-duration: .5s;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    transform-origin: top;
+}
+
+/* The animation code */
+@keyframes wiggle {
+    0%   {transform: rotate(0deg);}
+    25%   {transform: rotate(15deg);}
+    50%   {transform: rotate(0deg);}
+    75%   {transform: rotate(-15deg);}
+    100%   {transform: rotate(0deg);}
+}
+ 
+/*******************************************************
+ * 9. ANIMATION FOR RANDOM BOXES (when game is over)
+ ******************************************************/
+
+@keyframes growSpin {
+    0% {
+      opacity: 0; 
+    }
+    40% { 
+      opacity: .8; 
+      transform: rotate(225deg);
+    }
+    100% { 
+      opacity: 0; 
+      transform: rotate(90deg); 
+    }
+}
+.animBoxes { z-index: 25; }
+.box {
+    opacity: 0;
+    position: fixed;
+    z-index: 16;
+}
+.coverItUp {
+    background-color: rgba(0,0,0,0.7);
+    z-index: 15 !important;
+}
+.sheer {
+    background-color: rgba(0,0,0,0.6);
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -10;
+}
+
+.msg {
+    background-color: #121824;
+    border: 1px solid #d0d0e7;
+}
+.msg {
+    font-weight: 400;
+    font-size: 100%;
+    left: 50%;
+    margin: auto;
+    min-width: 150px;
+    padding: 1em;
+    position:absolute;
+    text-align: center;
+    top: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 17;
+}
+.msg { color:rgba(255, 255, 255, .8); }
+.msg h3, .msg h2, .msg h1 {
+    font-weight: 800;
+    text-align: center;
+}
+.msg h2 { 
+  color:deeppink; 
+  font-family: 'Luckiest+Guy', cursive;
+  font-size: 2em;
+}
+.msg h1 {
+  margin-top: 35px;
+  font-family: 'Luckiest+Guy', cursive;
+  font-size: 3em;
+}
+
+/*Adapted from Mark Senff's example http://codepen.io/senff/pen/fqmFo*/
+.closeBoxesSample {
+	background: #de0000;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 30px;
+	font-weight: normal;
+	height: 33px;
+	line-height: 30px;
+	position: absolute;
+	right: 1px;
+	text-align: center;
+	top: 1px;
+	width: 40px;
+}
+
+
+
+/*********************************************************
+ *  10. MEDIA
+ ********************************************************/
+
+/*
+ * These screen sizes are based on bootstrap.css version 4
+ * xs < 576px
+ * sm >= 576px
+ * md >= 768px
+ * lg >= 992 px
+ * xl >= 1200px
+ */
+
+
+/*xs screen*/
+@media (min-width: 0px) {
+  body {
+    font-size: 12px;
+  }
+  .palette .picker, .palette .dupl {
+    max-width: 20px;
+  }
+  .palette {
+    width: 20%;
+  }
+  .board {
+    width: 80%;
+  }
+  .instructions.showThis, .openIt.showThis {
+    display: none;
+  }
+  .slot, .board .pegs {
+    width: 4vh;
+    height: 4vh;
+  }
+  .palette, .board {
+    padding: 2vh 1vh;
+  }
+  .board .showSolution p {
+    width:22vh;
+    font-size: 80%;
+  }
+  .peg {
+    border-width: 1px;
+  }
+  .aboutUs .aboutSlots {
+    font-size: 2em;
+  }
+  .dev a {
+    font-size: 2em;
+  }
+  .aboutHand, .aboutCheck {
+    font-size: 3em;
+  }
+  .aboutUs .dev {
+    height: 22vh;
+  }
+  .aboutUs .aboutSlots {
+    padding: .1em;
+  }
+  .pointRight {
+    display:none;
+  }
+  .pointDown {
+    display:inline-block;
+  }
+  .about h4 {
+    padding: 0;
+  }
+}
+
+/*sm screen*/
+@media (min-width: 576px) {
+  body {
+    font-size: 14px;
+  }
+  .palette .picker, .palette .dupl {
+    max-width: 100px;
+    max-height: 100px;
+  }
+  .palette {
+    width: 30%;
+  }
+  .board {
+    width: 70%;
+  }
+  .slot, .board .pegs {
+    width: 8vh;
+    height: 8vh;
+  }
+  .palette, .board {
+    padding: 2vh 3vh;
+  }
+  .board .showSolution p {
+    width:36vh;
+    font-size: 120%;
+  }
+  .peg {
+    border-width: 2px;
+  }
+  .aboutUs .aboutSlots {
+    font-size: 1.2em;
+  }
+  .dev a {
+    font-size: 1.5em;
+  }
+  .aboutHand, .aboutCheck {
+    font-size: 1.2em;
+  }
+  .aboutUs .dev {
+    height: 15vw;
+  }
+  .aboutUs .aboutSlots {
+    height: 200px;
+    margin: 20px auto;
+    padding: .1em;
+  }
+  .pointRight {
+    display:inline-block;
+  }
+  .pointDown {
+    display:none;
+  }
+}
+
+/*md screen*/
+@media (min-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  .palette {
+    width: 11%;
+  }
+  .board {
+    width: 64%;
+  }
+  .instructions, .openIt {
+    width: 24%;
+  }
+  .instructions.showThis, .openIt.showThis {
+    display: block;
+  }
+  .instructions h3 {
+    font-size:18px;
+  }
+  .pegSample span {
+    display: none;
+  }
+  .slot, .board .pegs {
+    width: 9vh;
+    height: 9vh;
+  }
+  .palette, .board {
+    padding: 5vh 5vh;
+  }
+  .board .showSolution p {
+    width:46vh;
+  }
+  .aboutUs .aboutSlots {
+    font-size: 1.4em;
+  }
+  .dev a {
+    font-size: 1.4em;
+  }
+  .aboutHand, .aboutCheck {
+    font-size: 2em;
+  }
+}
+
+/*lg screen*/
+@media (min-width: 992px) {
+  .palette {
+    width: 17%;
+  }
+  .board {
+    width: 49%;
+  }
+  .instructions, .openIt {
+    width: 30%;
+  }
+  .instructions h3 {
+    font-size:30px;
+  }
+  .pegSample span {
+    display:inline-block;
+  }
+  .aboutUs .aboutSlots {
+    font-size: 2em;
+  }
+  .dev a {
+    font-size: 1.5em;
+  }
+  .aboutHand, .aboutCheck {
+    font-size: 3em;
+  }
+  .about h4 {
+    padding: 5vw;
+  }
+}
+
+/*xl screen*/
+@media (min-width: 1200px) {
+
+}
+
